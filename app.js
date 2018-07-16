@@ -7,10 +7,11 @@ var Airtable = require('airtable');
 var base = new Airtable({apiKey: 'keyJCRRojtU1jYCBB'}).base('appMm7V8XWifHqCja');
 
 var updateCount = 0, refreshCount = 0;
+var _refresh = 0;
 var array = {};
 var fields = ['full_name', 'email', 'continuation_url', 'cid', 'state', 'ip', 'User state'];
 const CONTACT_STATUS = {
-  'Incomplete': 'incomplete',
+  'Incomplete (basic info missing)': 'incomplete',
   'Basic Info Complete': 'basic_info_complete',
   'Video Complete': 'video_complete',
   'Complete': 'completed'
@@ -186,16 +187,25 @@ getDataFromAirtable('Incomplete', 'main', (err) => {
   if (err) { console.error(err); return; }
   postDataToGetresponse();
 
-  setTimeout(() => {
-    refresh();
-    setInterval(refresh, 5 * 60000);
-  }, 250 * array['main'].length);
+  if (_refresh === 0) {
+    setTimeout(() => {
+      refresh();
+    }, 225 * array['main'].length);
+  }
+  _refresh = (_refresh + 1) % 5;
 });
 
 // Call `getDataFromAirtable` function every 1 min (60s).
 setInterval(getDataFromAirtable, 1000 * 60, 'Incomplete', 'main', (err) => {
   if (err) { console.error(err); return; }
   postDataToGetresponse();
+
+  if (_refresh === 0) {
+    setTimeout(() => {
+      refresh();
+    }, 225 * array['main'].length);
+  }
+  _refresh = (_refresh + 1) % 5;
 });
 
 function refresh() {
@@ -217,7 +227,7 @@ function refresh() {
 }
 
 app.get('/', (req, res) => {
-  res.send('v1.2\tUpdated : ' + updateCount + ' times.\tRefreshed : ' + refreshCount + ' times.');
+  res.send('Updated : ' + updateCount + ' times.\tRefreshed : ' + refreshCount + ' times.');
 })
 
 app.listen(PORT, () => console.log('App listening on port ', PORT))
