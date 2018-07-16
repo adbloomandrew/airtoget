@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 5000
 var Airtable = require('airtable');
 var base = new Airtable({apiKey: 'keyJCRRojtU1jYCBB'}).base('appMm7V8XWifHqCja');
 
+var updateCount = 0, refreshCount = 0;
 var array = {};
 var fields = ['full_name', 'email', 'continuation_url', 'cid', 'state', 'ip', 'User state'];
 const CONTACT_STATUS = {
@@ -55,6 +56,7 @@ function postDataToGetresponse() {
 function postContact(idx) {
   if (idx === array['main'].length) {
     console.log('Data posted to Getresponse');
+    updateCount++;
     return;
   }
 
@@ -206,7 +208,7 @@ function refresh() {
         refreshGetResponse('video', 0, () => {
           getDataFromAirtable('Completed', 'completed', (err) => {
             if (err) { console.error(err); return; }
-            refreshGetResponse('completed', 0);
+            refreshGetResponse('completed', 0, () => { refreshCount++; });
           });
         });
       });
@@ -215,7 +217,7 @@ function refresh() {
 }
 
 app.get('/', (req, res) => {
-  res.send('v1.2')
+  res.send('v1.2\tUpdated : ' + updateCount + ' times.\tRefreshed : ' + refreshCount + ' times.');
 })
 
 app.listen(PORT, () => console.log('App listening on port ', PORT))
