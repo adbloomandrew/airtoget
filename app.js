@@ -187,25 +187,25 @@ getDataFromAirtable('Incomplete', 'main', (err) => {
   if (err) { console.error(err); return; }
   postDataToGetresponse();
 
-  if (_refresh === 0) {
+  // if (_refresh === 0) {
     setTimeout(() => {
       refresh();
     }, 225 * array['main'].length);
-  }
-  _refresh = (_refresh + 1) % 5;
+  // }
+  // _refresh = (_refresh + 1) % 5;
 });
 
-// Call `getDataFromAirtable` function every 1 min (60s).
-setInterval(getDataFromAirtable, 1000 * 60, 'Incomplete', 'main', (err) => {
+// Call `getDataFromAirtable` function every 5 min (300s).
+setInterval(getDataFromAirtable, 1000 * 60 * 5, 'Incomplete', 'main', (err) => {
   if (err) { console.error(err); return; }
   postDataToGetresponse();
 
-  if (_refresh === 0) {
+  // if (_refresh === 0) {
     setTimeout(() => {
       refresh();
     }, 225 * array['main'].length);
-  }
-  _refresh = (_refresh + 1) % 5;
+  // }
+  // _refresh = (_refresh + 1) % 5;
 });
 
 function refresh() {
