@@ -209,7 +209,7 @@ getDataFromAirtable('Incomplete', 'main', (err) => {
 });
 
 // Call `getDataFromAirtable` function every 5 min (300s).
-setInterval(getDataFromAirtable, 1000 * 60 * 20, 'Incomplete', 'main', (err) => {
+setInterval(getDataFromAirtable, 1000 * 60 * 60, 'Incomplete', 'main', (err) => {
   console.log(".. getDataFromAirtable 'Incomplete' (setInterval)")
   if (err) { console.error(err); return; }
   postDataToGetresponse();
