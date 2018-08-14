@@ -30,7 +30,7 @@ function getDataFromAirtable(view, aryname, done) {
     // This function (`page`) will get called for each page of records.
 
     records.forEach(function (record) {
-      // console.log('Retrieved', record.get('country'));
+      //console.log('Retrieved ', record.get('country'), record.get("email"));
       let newItem = {};
       for (let idx in fields) {
         const field = fields[idx];
@@ -56,15 +56,19 @@ function postDataToGetresponse() {
 
 function postContact(idx) {
   if (idx === array['main'].length) {
-    console.log('Data posted to Getresponse');
+    console.log('Data posted ', idx, ' to Getresponse');
     updateCount++;
     return;
   }
-
+  if (idx % 100 === 0) {
+    console.log("postContact ", idx, "/", array['main'].length);
+  }
   const contact = array['main'][idx];
-
-  createContact(contact);
-
+  if(typeof(contact) !== "undefined") {
+    createContact(contact);
+  } else {
+    console.log("Undefined Contact at array['main'][", idx, "]");
+  }
   setTimeout(postContact, 200, idx + 1);
 }
 
@@ -154,39 +158,48 @@ function updateContact(contactId, contact) {
 
 function refreshGetResponse(aryname, idx, callback = () => {}) {
   if (idx === array[aryname].length) {
-    console.log(aryname + ' Refreshed');
+    console.log(aryname, array[aryname].length, 'Refreshed');
     callback();
     return;
   }
-
+  if(idx % 100 === 0) {
+    console.log('Refresh getResponse', idx, "/", array[aryname].length);
+  }
   const contact = array[aryname][idx];
-  const headers = {
-    'Content-Type': 'application/json',
-    'X-Auth-Token': 'api-key 46374eecbb4807ce3997154dbe9f7c1a'
-  };
-  let apiUrl = 'https://api.getresponse.com/v3/contacts?query[email]=' + contact.email + '&fields=contactId';
-  request.get(apiUrl, {
-    headers: headers
-  }, (err, res, body) => {
-    if (err) { console.log(err); return; }
-    const contacts = JSON.parse(body);
-    if (contacts.length !== 0) {
-      if (contacts[0] === undefined) {
-        console.log('bug here!');
-        console.log(body)
+  if(typeof(contact) !== "undefined") {
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Auth-Token': 'api-key 46374eecbb4807ce3997154dbe9f7c1a'
+    };
+    let apiUrl = 'https://api.getresponse.com/v3/contacts?query[email]=' + contact.email + '&fields=contactId';
+    request.get(apiUrl, {
+      headers: headers
+    }, (err, res, body) => {
+      if (err) { console.log(err); return; }
+      const contacts = JSON.parse(body);
+      if (contacts.length !== 0) {
+        if (contacts[0] === undefined) {
+          console.log('bug here!');
+          console.log(body)
+        }
+        updateContact(contacts[0].contactId, contact);
+      } else {
+        createContact(contact);
       }
-      updateContact(contacts[0].contactId, contact);
-    } else {
-      createContact(contact);
-    }
-  })
+    })
+  } else {
+    console.log("Undefined contact at array[" + aryname + "][" + idx + "]");
+  }
   setTimeout(refreshGetResponse, 200, aryname, idx + 1, callback);
 }
 
+console.log("Initial Airtable fetch");
 getDataFromAirtable('Incomplete', 'main', (err) => {
+  console.log(".. getDataFromAirtable 'Incomplete'");
   if (err) { console.error(err); return; }
   postDataToGetresponse();
 
+  console.log(".. postDataToGetResponse 'Incomplete'");
   // if (_refresh === 0) {
     setTimeout(() => {
       refresh();
@@ -197,9 +210,10 @@ getDataFromAirtable('Incomplete', 'main', (err) => {
 
 // Call `getDataFromAirtable` function every 5 min (300s).
 setInterval(getDataFromAirtable, 1000 * 60 * 5, 'Incomplete', 'main', (err) => {
+  console.log(".. getDataFromAirtable 'Incomplete' (setInterval)")
   if (err) { console.error(err); return; }
   postDataToGetresponse();
-
+  console.log(".. postDataToGetResponse 'Incomplete'");
   // if (_refresh === 0) {
     setTimeout(() => {
       refresh();
@@ -211,14 +225,22 @@ setInterval(getDataFromAirtable, 1000 * 60 * 5, 'Incomplete', 'main', (err) => {
 function refresh() {
   console.log('Start refreshing...');
   getDataFromAirtable('Basic Info Complete', 'basic', (err) => {
+    console.log(".. getDataFromAirtable 'Basic Info Complete'");
     if (err) { console.error(err); return; }
     refreshGetResponse('basic', 0, () => {
+      console.log(".. refreshGetResponse 'basic'");
       getDataFromAirtable('Video Complete', 'video', (err) => {
+        console.log(".. getDataFromAirtable 'Video'");
         if (err) { console.error(err); return; }
         refreshGetResponse('video', 0, () => {
+          console.log(".. refreshGetResponse 'video'");
           getDataFromAirtable('Completed', 'completed', (err) => {
+            console.log(".. getDataFromAirtable 'Completed'");
             if (err) { console.error(err); return; }
-            refreshGetResponse('completed', 0, () => { refreshCount++; });
+            refreshGetResponse('completed', 0, () => {
+              console.log(".. refreshGetResponse 'completed'");
+              refreshCount++;
+            });
           });
         });
       });
