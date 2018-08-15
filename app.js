@@ -107,6 +107,10 @@ function generateCustomFields(contact) {
   return customFieldValues;
 }
 
+function handleResponse(err, res, body) {
+  if(err) { return console.log(err); }
+}
+
 function createContact(contact) {
   const headers = {
     'Content-Type': 'application/json',
@@ -130,7 +134,7 @@ function createContact(contact) {
     headers: headers,
     body: JSON.stringify(body)
   };
-  request.post('https://api.getresponse.com/v3/contacts', options);
+  request.post('https://api.getresponse.com/v3/contacts', options, handleResponse);
 }
 
 function updateContact(contactId, contact) {
@@ -153,7 +157,7 @@ function updateContact(contactId, contact) {
     body: JSON.stringify(body)
   };
   const apiUrl = 'https://api.getresponse.com/v3/contacts/' + contactId;
-  request.post(apiUrl, options);
+  request.post(apiUrl, options, handleResponse);
 }
 
 function refreshGetResponse(aryname, idx, callback = () => {}) {
@@ -193,6 +197,7 @@ function refreshGetResponse(aryname, idx, callback = () => {}) {
   setTimeout(refreshGetResponse, 200, aryname, idx + 1, callback);
 }
 
+  /*
 console.log("Initial Airtable fetch");
 getDataFromAirtable('Incomplete', 'main', (err) => {
   console.log(".. getDataFromAirtable 'Incomplete'");
@@ -247,6 +252,8 @@ function refresh() {
     });
   });
 }
+*/
+
 
 app.get('/', (req, res) => {
   res.send('Updated : ' + updateCount + ' times.\tRefreshed : ' + refreshCount + ' times.');
