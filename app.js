@@ -197,7 +197,6 @@ function refreshGetResponse(aryname, idx, callback = () => {}) {
   setTimeout(refreshGetResponse, 200, aryname, idx + 1, callback);
 }
 
-  /*
 console.log("Initial Airtable fetch");
 getDataFromAirtable('Incomplete', 'main', (err) => {
   console.log(".. getDataFromAirtable 'Incomplete'");
@@ -252,8 +251,6 @@ function refresh() {
     });
   });
 }
-*/
-
 
 app.get('/', (req, res) => {
   res.send('Updated : ' + updateCount + ' times.\tRefreshed : ' + refreshCount + ' times.');
