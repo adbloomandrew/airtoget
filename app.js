@@ -4,7 +4,7 @@ const app = express();
 const PORT = process.env.PORT || 5000
 
 var Airtable = require('airtable');
-var base = new Airtable({apiKey: 'keyJCRRojtU1jYCBB'}).base('appMm7V8XWifHqCja');
+var base = new Airtable({apiKey: 'keyrV0cKo5ihXnbGO'}).base('appMm7V8XWifHqCja');
 
 var updateCount = 0, refreshCount = 0;
 var _refresh = 0;
@@ -114,7 +114,7 @@ function handleResponse(err, res, body) {
 function createContact(contact) {
   const headers = {
     'Content-Type': 'application/json',
-    'X-Auth-Token': 'api-key 46374eecbb4807ce3997154dbe9f7c1a'
+    'X-Auth-Token': 'api-key x6l47d7mo1dlexnvss4pjvk56dcjzpeg'
   };
   var customFieldValues = generateCustomFields(contact);
   const body = {
@@ -140,7 +140,7 @@ function createContact(contact) {
 function updateContact(contactId, contact) {
   const headers = {
     'Content-Type': 'application/json',
-    'X-Auth-Token': 'api-key 46374eecbb4807ce3997154dbe9f7c1a'
+    'X-Auth-Token': 'api-key x6l47d7mo1dlexnvss4pjvk56dcjzpeg'
   };
   var customFieldValues = generateCustomFields(contact);
   const body = {
@@ -173,7 +173,7 @@ function refreshGetResponse(aryname, idx, callback = () => {}) {
   if(typeof(contact) !== "undefined") {
     const headers = {
       'Content-Type': 'application/json',
-      'X-Auth-Token': 'api-key 46374eecbb4807ce3997154dbe9f7c1a'
+      'X-Auth-Token': 'api-key x6l47d7mo1dlexnvss4pjvk56dcjzpeg'
     };
     let apiUrl = 'https://api.getresponse.com/v3/contacts?query[email]=' + contact.email + '&fields=contactId';
     request.get(apiUrl, {
